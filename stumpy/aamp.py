@@ -129,16 +129,18 @@ def _compute_diagonal(
                     ** p
                 )
             else:
-                p_norm = np.abs(
-                    p_norm
-                    - np.absolute(T_B[uint64_j - uint64_1] - T_A[uint64_i - uint64_1])
-                    ** p
-                    + np.absolute(
-                        T_B[uint64_j + uint64_m - uint64_1]
-                        - T_A[uint64_i + uint64_m - uint64_1]
-                    )
-                    ** p
+                old_diff = T_B[uint64_j - uint64_1] - T_A[uint64_i - uint64_1]
+                new_diff = (
+                    T_B[uint64_j + uint64_m - uint64_1]
+                    - T_A[uint64_i + uint64_m - uint64_1]
                 )
+                if p == 2.0:
+                    old_power = old_diff * old_diff
+                    new_power = new_diff * new_diff
+                else:
+                    old_power = np.absolute(old_diff) ** p
+                    new_power = np.absolute(new_diff) ** p
+                p_norm = np.abs(p_norm - old_power + new_power)
 
             if p_norm < config.STUMPY_P_NORM_THRESHOLD:
                 p_norm = 0.0
